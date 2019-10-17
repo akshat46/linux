@@ -7400,6 +7400,9 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
 		kvm_sched_yield(vcpu->kvm, a0);
 		ret = 0;
 		break;
+//Added case	
+	case 0x283:
+		ret = 0x0033383245504D43;
 	default:
 		ret = -KVM_ENOSYS;
 		break;
