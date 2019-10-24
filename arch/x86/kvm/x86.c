@@ -6871,7 +6871,7 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
 #endif
 	/*KVM_HC_CUSTOM_CMPE283*/
 	case 0x283:
-	       ret = 0x0033383245504D42;
+	       ret = 0x0033383245504D43;
 	       break;
 	default:
 		ret = -KVM_ENOSYS;
