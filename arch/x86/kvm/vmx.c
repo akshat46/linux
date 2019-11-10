@@ -189,6 +189,9 @@ module_param(ple_window_max, uint, 0444);
 
 extern const ulong vmx_return;
 
+/*CUSTOM CPUID VARS*/
+int total_exits = 0;
+
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_should_flush);
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_flush_cond);
 static DEFINE_MUTEX(vmx_l1d_flush_mutex);
@@ -10041,6 +10044,7 @@ static void dump_vmcs(void)
  */
 static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 {
+	total_exits = total_exits + 1;
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;

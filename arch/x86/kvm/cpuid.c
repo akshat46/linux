@@ -26,6 +26,10 @@
 #include "mmu.h"
 #include "trace.h"
 #include "pmu.h"
+#include "vmx.c"
+
+/*CUSTOM IMPORTED CPUID VARS*/
+extern int total_exits;
 
 static u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
@@ -951,15 +955,22 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 					//2=0x4FFFFFFE
 					//3=0x4FFFFFFD
 					//4=0x4FFFFFFC
-	if(eax == 0x4FFFFFFF)
-		extra = 1;
-	else if(eax == 0x4FFFFFFE)
-		extra = 2;
-	else if(eax == 0x4FFFFFFD)
-		extra = 3;
-	else if(eax == 0x4FFFFFFC)
-		extra = 4;
-	
+	switch(eax){
+		case 0x4FFFFFFF:
+			extra = 1;
+			break;
+		case 0x4FFFFFFE:
+			extra = 2;
+			break;
+		case 0x4FFFFFFD:
+			extra = 3;
+			break;
+		case 0x4FFFFFFC:
+			extra = 4;
+			break;
+		default:
+			break;
+	}
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
@@ -967,24 +978,30 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	eax = kvm_register_read(vcpu, VCPU_REGS_RAX);
 	ecx = kvm_register_read(vcpu, VCPU_REGS_RCX);
 	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
-	
+
 	switch(extra){
 		case 1:
-			eax = 1234;
+			eax = total_exits;
+			printk("total_exits: %i\n", total_exits);
+			printk("eax: %lu\n", eax);
 			break;
 		case 2:
 			ebx = 2345;
+			printk("ebx: %lu\n", ebx);
 			break;
 		case 3:
 			ecx = 3456;
+			printk("ecx: %lu\n", ecx);
 			break;
 		case 4:
 			edx = 4567;
+			printk("edx: %lu\n", edx);
+			printk("eax##4: %lu\n", eax);
 			break;
 		default:
 			break;
 	}
-	
+
 	kvm_register_write(vcpu, VCPU_REGS_RAX, eax);
 	kvm_register_write(vcpu, VCPU_REGS_RBX, ebx);
 	kvm_register_write(vcpu, VCPU_REGS_RCX, ecx);

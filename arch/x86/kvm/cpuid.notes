@@ -1,0 +1,5 @@
+
+total_exits:
+#193        vmx.c: variable definitions
+#10047      vmx.c: incremented by 1 everytime vmx_handle_exit variable is entered
+#32         cpuid.c: importing as extern from vmx.c
