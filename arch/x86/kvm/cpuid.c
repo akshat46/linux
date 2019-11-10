@@ -631,6 +631,14 @@ static inline int __do_cpuid_ent(struct kvm_cpuid_entry2 *entry, u32 function,
 		entry->ecx = 0;
 		entry->edx = 0;
 		break;
+	//Added cases*****************
+	case 0x4FFFFFFF:
+		entry->eax = 0x4; /* allow ARAT */
+		entry->ebx = 0;
+		entry->ecx = 0;
+		entry->edx = 0;
+		break;
+	//--Added cases***************
 	case 0x80000000:
 		entry->eax = min(entry->eax, 0x8000001f);
 		break;
@@ -939,6 +947,19 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
+	int extra = 0; //1=0x4FFFFFFF
+					//2=0x4FFFFFFE
+					//3=0x4FFFFFFD
+					//4=0x4FFFFFFC
+	if(eax == 0x4FFFFFFF)
+		extra = 1;
+	else if(eax == 0x4FFFFFFE)
+		extra = 2;
+	else if(eax == 0x4FFFFFFD)
+		extra = 3;
+	else if(eax == 0x4FFFFFFC)
+		extra = 4;
+	
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
@@ -946,6 +967,24 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	eax = kvm_register_read(vcpu, VCPU_REGS_RAX);
 	ecx = kvm_register_read(vcpu, VCPU_REGS_RCX);
 	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
+	
+	switch(extra){
+		case 1:
+			eax = 1234;
+			break;
+		case 2:
+			ebx = 2345;
+			break;
+		case 3:
+			ecx = 3456;
+			break;
+		case 4:
+			edx = 4567;
+			break;
+		default:
+			break;
+	}
+	
 	kvm_register_write(vcpu, VCPU_REGS_RAX, eax);
 	kvm_register_write(vcpu, VCPU_REGS_RBX, ebx);
 	kvm_register_write(vcpu, VCPU_REGS_RCX, ecx);
