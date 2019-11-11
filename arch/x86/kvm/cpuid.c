@@ -985,7 +985,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	switch(extra){
 		case 1:
 			//~ eax = total_exits_temp;
-			printk("total_exits: %i\n", atomic_read(&total_exits_temp));
+			//~ printk("total_exits: %i\n", atomic_read(&total_exits_temp));
 			printk("eax: %lu\n", (unsigned long)eax);
 			break;
 		case 2:
@@ -1002,7 +1002,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			printk("eax##4: %lu\n", (unsigned long)eax);
 			break;
 		default:
-			printk("total_exits: %i\n", atomic_read(&total_exits_temp));
+			//~ printk("total_exits: %i\n", atomic_read(&total_exits_temp));
 			break;
 	}
 

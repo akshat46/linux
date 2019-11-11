@@ -10051,7 +10051,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 	
-	//~ atomic_inc(&total_exits_temp);
+	atomic_inc(&total_exits_temp);
 	
 	/*
 	 * Flush logged GPAs PML buffer, this will make dirty_bitmap more
