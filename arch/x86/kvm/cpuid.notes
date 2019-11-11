@@ -5,4 +5,6 @@ total_exits:
 #32         cpuid.c: importing as extern from vmx.c
 
 ###current###
-#10054		vmx.c: atomic_inc
+#988		cpuid.c: instead of int, used double in printk (replaced with pr_info)
+#1005		cpuid.c: same as line 988
+commented them out for now
