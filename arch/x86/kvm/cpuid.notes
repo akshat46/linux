@@ -5,6 +5,7 @@ total_exits:
 #32         cpuid.c: importing as extern from vmx.c
 
 ###current###
-#988		cpuid.c: instead of int, used double in printk (replaced with pr_info)
-#1005		cpuid.c: same as line 988
-commented them out for now
+#988		//cpuid.c: instead of int, used double in printk (replaced with pr_info)
+#1005		//cpuid.c: same as line 988
+#987		assigning total_exits_temp to a temp int (without casting to unsigned long)
+

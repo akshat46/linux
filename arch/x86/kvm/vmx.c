@@ -190,8 +190,7 @@ module_param(ple_window_max, uint, 0444);
 extern const ulong vmx_return;
 
 /*CUSTOM CPUID VARS*/
-atomic_t total_exits_temp = ATOMIC_INIT(0);
-//~ EXPORT_SYMBOL(total_exits_temp);
+extern atomic_t total_exits_temp;// = ATOMIC_INIT(0);
 
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_should_flush);
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_flush_cond);

@@ -29,7 +29,8 @@
 //~ #include "vmx.h"
 
 /*CUSTOM IMPORTED CPUID VARS*/
-extern atomic_t total_exits_temp;
+atomic_t total_exits_temp;// = ATOMIC_INIT(0);
+EXPORT_SYMBOL(total_exits_temp);
 
 static u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
@@ -956,7 +957,8 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 					//2=0x4FFFFFFE
 					//3=0x4FFFFFFD
 					//4=0x4FFFFFFC
-
+	int temp = 0;
+	
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
 
@@ -984,7 +986,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 
 	switch(extra){
 		case 1:
-			//~ eax = total_exits_temp;
+			eax = atomic_read(&total_exits_temp);
 			//~ pr_info("total_exits: %i\n", atomic_read(&total_exits_temp));
 			printk("eax: %lu\n", (unsigned long)eax);
 			break;
