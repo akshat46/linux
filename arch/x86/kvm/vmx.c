@@ -191,6 +191,7 @@ extern const ulong vmx_return;
 
 /*CUSTOM CPUID VARS*/
 extern atomic_t total_exits_temp;// = ATOMIC_INIT(0);
+extern atomic64_t total_cpu_cycles;
 
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_should_flush);
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_flush_cond);
@@ -10047,7 +10048,9 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
-
+	uint64_t start, end, tmp;
+	start = rdtsc();
+	
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 	
 	atomic_inc(&total_exits_temp);
@@ -10063,17 +10066,34 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		vmx_flush_pml_buffer(vcpu);
 
 	/* If guest state is invalid, start emulating */
-	if (vmx->emulation_required)
+	if (vmx->emulation_required){
+		//custom code
+		end = rdtsc();
+		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
+		tmp = end - start;
+		atomic64_add(tmp, &total_cpu_cycles);
 		return handle_invalid_guest_state(vcpu);
+	}
 
-	if (is_guest_mode(vcpu) && nested_vmx_exit_reflected(vcpu, exit_reason))
+	if (is_guest_mode(vcpu) && nested_vmx_exit_reflected(vcpu, exit_reason)){
+		//custom code
+		end = rdtsc();
+		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
+		tmp = end - start;
+		atomic64_add(tmp, &total_cpu_cycles);
 		return nested_vmx_reflect_vmexit(vcpu, exit_reason);
+	}
 
 	if (exit_reason & VMX_EXIT_REASONS_FAILED_VMENTRY) {
 		dump_vmcs();
 		vcpu->run->exit_reason = KVM_EXIT_FAIL_ENTRY;
 		vcpu->run->fail_entry.hardware_entry_failure_reason
 			= exit_reason;
+		//custom code
+		end = rdtsc();
+		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
+		tmp = end - start;
+		atomic64_add(tmp, &total_cpu_cycles);
 		return 0;
 	}
 
@@ -10081,6 +10101,11 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		vcpu->run->exit_reason = KVM_EXIT_FAIL_ENTRY;
 		vcpu->run->fail_entry.hardware_entry_failure_reason
 			= vmcs_read32(VM_INSTRUCTION_ERROR);
+		//custom code
+		end = rdtsc();
+		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
+		tmp = end - start;
+		atomic64_add(tmp, &total_cpu_cycles);
 		return 0;
 	}
 
@@ -10107,6 +10132,11 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 			vcpu->run->internal.data[3] =
 				vmcs_read64(GUEST_PHYSICAL_ADDRESS);
 		}
+		//custom code
+		end = rdtsc();
+		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
+		tmp = end - start;
+		atomic64_add(tmp, &total_cpu_cycles);
 		return 0;
 	}
 
@@ -10130,12 +10160,23 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 	}
 
 	if (exit_reason < kvm_vmx_max_exit_handlers
-	    && kvm_vmx_exit_handlers[exit_reason])
+	    && kvm_vmx_exit_handlers[exit_reason]){
+		//custom code
+		end = rdtsc();
+		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
+		tmp = end - start;
+		atomic64_add(tmp, &total_cpu_cycles);
 		return kvm_vmx_exit_handlers[exit_reason](vcpu);
+	}
 	else {
 		vcpu_unimpl(vcpu, "vmx: unexpected exit reason 0x%x\n",
 				exit_reason);
 		kvm_queue_exception(vcpu, UD_VECTOR);
+		//custom code
+		end = rdtsc();
+		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
+		tmp = end - start;
+		atomic64_add(tmp, &total_cpu_cycles);
 		return 1;
 	}
 }

@@ -30,7 +30,9 @@
 
 /*CUSTOM IMPORTED CPUID VARS*/
 atomic_t total_exits_temp;// = ATOMIC_INIT(0);
+atomic64_t total_cpu_cycles;
 EXPORT_SYMBOL(total_exits_temp);
+EXPORT_SYMBOL(total_cpu_cycles);
 
 static u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
@@ -952,12 +954,13 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
+	
 	//~ extern atomic_t total_exits_temp;
+	u32 high_bits_totaltime, low_bits_totaltime;
 	int extra = 0; //1=0x4FFFFFFF
 					//2=0x4FFFFFFE
 					//3=0x4FFFFFFD
 					//4=0x4FFFFFFC
-	int temp = 0;
 	
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
@@ -967,44 +970,36 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	
 	switch(eax){
 		case 0x4FFFFFFF:
-			extra = 1;
-			break;
-		case 0x4FFFFFFE:
-			extra = 2;
-			break;
-		case 0x4FFFFFFD:
-			extra = 3;
-			break;
-		case 0x4FFFFFFC:
-			extra = 4;
-			break;
-		default:
-			break;
-	}
-	
-	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
-
-	switch(extra){
-		case 1:
+			/*
+			 * Total number of exits
+			 * */
 			eax = atomic_read(&total_exits_temp);
 			//~ pr_info("total_exits: %i\n", atomic_read(&total_exits_temp));
-			printk("eax: %lu\n", (unsigned long)eax);
+			printk("Total number of vm exits: %lu\n", (unsigned long)eax);
 			break;
-		case 2:
-			ebx = 2345;
-			printk("ebx: %lu\n", (unsigned long)ebx);
+		case 0x4FFFFFFE:
+			/*
+			 * Total CPU cycles spent in all exits
+			 * */
+			printk("Total time spent in vmx: %lu\n", atomic64_read(&total_cpu_cycles));
+			low_bits_totaltime = atomic64_read(&total_cpu_cycles) & 0xffffffff;
+			high_bits_totaltime = atomic64_read(&total_cpu_cycles) >> 32;
+			ebx = high_bits_totaltime;
+			ecx = low_bits_totaltime;
+			printk("high: %lu\n", (unsigned long)ebx);
+			printk("low: %lu\n", (unsigned long)ecx);
 			break;
-		case 3:
+		case 0x4FFFFFFD:
 			ecx = 3456;
 			printk("ecx: %lu\n", (unsigned long)ecx);
 			break;
-		case 4:
+		case 0x4FFFFFFC:
 			edx = 4567;
 			printk("edx: %lu\n", (unsigned long)edx);
 			printk("eax##4: %lu\n", (unsigned long)eax);
 			break;
 		default:
-			//~ pr_info("total_exits: %i\n", atomic_read(&total_exits_temp));
+			kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);	
 			break;
 	}
 

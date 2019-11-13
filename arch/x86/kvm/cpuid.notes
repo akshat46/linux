@@ -8,4 +8,5 @@ total_exits:
 #988		//cpuid.c: instead of int, used double in printk (replaced with pr_info)
 #1005		//cpuid.c: same as line 988
 #987		assigning total_exits_temp to a temp int (without casting to unsigned long)
+#m-l		(multiple lines in vmx_handle_exit inside vmx.c) used rdtsc() instead of clock()
 
