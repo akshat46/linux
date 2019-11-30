@@ -29,10 +29,23 @@
 //~ #include "vmx.h"
 
 /*CUSTOM IMPORTED CPUID VARS*/
-atomic_t total_exits_temp;// = ATOMIC_INIT(0);
+// total exits and cpu cycles
+atomic_t total_exits_temp;
 atomic64_t total_cpu_cycles;
 EXPORT_SYMBOL(total_exits_temp);
 EXPORT_SYMBOL(total_cpu_cycles);
+// specific exits and cpu cycles
+atomic_t id_total_exits;
+atomic64_t id_total_cpu_cycles;
+EXPORT_SYMBOL(id_total_exits);
+EXPORT_SYMBOL(id_total_cpu_cycles);
+
+struct vmexit_info
+{
+	atomic64_t total_time;
+	atomic_t count;
+};
+extern struct vmexit_info vmexit_info_array[70];
 
 static u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
@@ -954,13 +967,7 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
-	
-	//~ extern atomic_t total_exits_temp;
 	u32 high_bits_totaltime, low_bits_totaltime;
-	int extra = 0; //1=0x4FFFFFFF
-					//2=0x4FFFFFFE
-					//3=0x4FFFFFFD
-					//4=0x4FFFFFFC
 	
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
@@ -990,8 +997,10 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			printk("low: %lu\n", (unsigned long)ecx);
 			break;
 		case 0x4FFFFFFD:
-			ecx = 3456;
 			printk("ecx: %lu\n", (unsigned long)ecx);
+			u32 temp = eax;
+			eax = atomic_read(&vmexit_info_array[temp]->count);
+			printk("Total time spent in vmx: %lu\n", atomic_read(&vmexit_info_array[temp]->count));
 			break;
 		case 0x4FFFFFFC:
 			edx = 4567;

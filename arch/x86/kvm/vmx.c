@@ -189,9 +189,21 @@ module_param(ple_window_max, uint, 0444);
 
 extern const ulong vmx_return;
 
-/*CUSTOM CPUID VARS*/
-extern atomic_t total_exits_temp;// = ATOMIC_INIT(0);
+/***********CUSTOM CPUID VARS*************/
+extern atomic_t total_exits_temp;
 extern atomic64_t total_cpu_cycles;
+extern atomic_t id_total_exits;
+extern atomic64_t id_total_cpu_cycles;
+
+struct vmexit_info
+{
+	atomic64_t total_time;
+	atomic_t count;
+};
+
+static struct vmexit_info vmexit_info_array[70];
+EXPORT_SYMBOL(vmexit_info_array);
+/****************************************/
 
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_should_flush);
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_flush_cond);
@@ -10054,7 +10066,8 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 	
 	atomic_inc(&total_exits_temp);
-	
+	atomic_inc(&vmexit_info_array[exit_reason].count);
+	printk("####Total number of vmexit for this type: %lu\n", atomic64_read(&total_cpu_cycles));
 	/*
 	 * Flush logged GPAs PML buffer, this will make dirty_bitmap more
 	 * updated. Another good is, in kvm_vm_ioctl_get_dirty_log, before
@@ -10069,7 +10082,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 	if (vmx->emulation_required){
 		//custom code
 		end = rdtsc();
-		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
 		return handle_invalid_guest_state(vcpu);
@@ -10078,7 +10090,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 	if (is_guest_mode(vcpu) && nested_vmx_exit_reflected(vcpu, exit_reason)){
 		//custom code
 		end = rdtsc();
-		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
 		return nested_vmx_reflect_vmexit(vcpu, exit_reason);
@@ -10091,7 +10102,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 			= exit_reason;
 		//custom code
 		end = rdtsc();
-		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
 		return 0;
@@ -10103,7 +10113,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 			= vmcs_read32(VM_INSTRUCTION_ERROR);
 		//custom code
 		end = rdtsc();
-		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
 		return 0;
@@ -10134,7 +10143,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		}
 		//custom code
 		end = rdtsc();
-		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
 		return 0;
@@ -10163,7 +10171,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 	    && kvm_vmx_exit_handlers[exit_reason]){
 		//custom code
 		end = rdtsc();
-		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
 		return kvm_vmx_exit_handlers[exit_reason](vcpu);
@@ -10174,7 +10181,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		kvm_queue_exception(vcpu, UD_VECTOR);
 		//custom code
 		end = rdtsc();
-		//~ total_cpu_cycles =  + atomic_long_read(&total_cpu_cycles);
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
 		return 1;
