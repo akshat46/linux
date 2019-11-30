@@ -966,7 +966,7 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
-	u32 eax, ebx, ecx, edx;
+	u32 eax, ebx, ecx, edx, temp;
 	u32 high_bits_totaltime, low_bits_totaltime;
 	
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
@@ -998,9 +998,9 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			break;
 		case 0x4FFFFFFD:
 			printk("ecx: %lu\n", (unsigned long)ecx);
-			u32 temp = eax;
+			temp = eax;
 			eax = atomic_read(&vmexit_info_array[temp]->count);
-			printk("Total time spent in vmx: %lu\n", atomic_read(&vmexit_info_array[temp]->count));
+			printk("Total time spent in vmx: %lu\n", atomic_read(&vmexit_info_array[temp].count));
 			break;
 		case 0x4FFFFFFC:
 			edx = 4567;
