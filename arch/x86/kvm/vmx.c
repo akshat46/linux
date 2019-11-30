@@ -195,14 +195,14 @@ extern atomic64_t total_cpu_cycles;
 extern atomic_t id_total_exits;
 extern atomic64_t id_total_cpu_cycles;
 
-struct vmexit_info
-{
-	atomic64_t total_time;
-	atomic_t count;
-};
+// struct vmexit_info
+// {
+// 	atomic64_t total_time;
+// 	atomic_t count;
+// };
 
-static struct vmexit_info vmexit_info_array[70];
-EXPORT_SYMBOL(vmexit_info_array);
+// static struct vmexit_info vmexit_info_array[70];
+// EXPORT_SYMBOL(vmexit_info_array);
 /****************************************/
 
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_should_flush);
@@ -10066,8 +10066,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 	
 	atomic_inc(&total_exits_temp);
-	atomic_inc(&vmexit_info_array[exit_reason].count);
-	printk("####Total number of vmexit for this type: %lu\n", atomic64_read(&total_cpu_cycles));
+	//atomic_inc(&vmexit_info_array[exit_reason].count);
 	/*
 	 * Flush logged GPAs PML buffer, this will make dirty_bitmap more
 	 * updated. Another good is, in kvm_vm_ioctl_get_dirty_log, before

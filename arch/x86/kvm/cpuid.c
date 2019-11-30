@@ -40,12 +40,12 @@ atomic64_t id_total_cpu_cycles;
 EXPORT_SYMBOL(id_total_exits);
 EXPORT_SYMBOL(id_total_cpu_cycles);
 
-struct vmexit_info
-{
-	atomic64_t total_time;
-	atomic_t count;
-};
-extern struct vmexit_info vmexit_info_array[70];
+// struct vmexit_info
+// {
+// 	atomic64_t total_time;
+// 	atomic_t count;
+// };
+// extern struct vmexit_info vmexit_info_array[70];
 
 static u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
@@ -997,9 +997,9 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			printk("low: %lu\n", (unsigned long)ecx);
 			break;
 		case 0x4FFFFFFD:
-			printk("ecx: %lu\n", (unsigned long)ecx);
-			temp = eax;
-			eax = atomic_read(&vmexit_info_array[temp].count);
+			// printk("ecx: %lu\n", (unsigned long)ecx);
+			// temp = eax;
+			// eax = atomic_read(&vmexit_info_array[temp].count);
 			printk("Total time spent in vmx: %lu\n", eax);
 			break;
 		case 0x4FFFFFFC:
