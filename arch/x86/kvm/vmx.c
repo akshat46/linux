@@ -194,17 +194,6 @@ extern atomic_t total_exits_temp;
 extern atomic64_t total_cpu_cycles;
 extern atomic_t id_total_exits;
 extern atomic64_t id_total_cpu_cycles;
-
-// struct vmexit_info
-// {
-// 	atomic64_t total_time;
-// 	atomic_t count;
-// };
-
-// struct vmexit_info vmexit_info_array[MAX_VMEXITS] = {
-// 	[0 ... MAX_VMEXITS] = { ATOMIC_INIT(0), ATOMIC_INIT(0) }
-// };
-//EXPORT_SYMBOL(vmexit_info_array);
 /****************************************/
 
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_should_flush);

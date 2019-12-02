@@ -40,8 +40,11 @@ atomic64_t id_total_cpu_cycles;
 EXPORT_SYMBOL(id_total_exits);
 EXPORT_SYMBOL(id_total_cpu_cycles);
 
-// struct vmexit_info vmexit_info_array[MAX_VMEXITS];
-// EXPORT_SYMBOL(vmexit_info_array);
+struct vmexit_info vmexit_info_array[MAX_VMEXITS] 
+// = {
+// 	[0 ... MAX_VMEXITS] = { ATOMIC_INIT(0), ATOMIC_INIT(0) }
+// };
+EXPORT_SYMBOL(vmexit_info_array);
 // struct vmexit_info
 // {
 // 	atomic64_t total_time;
