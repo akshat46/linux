@@ -201,8 +201,8 @@ extern atomic64_t id_total_cpu_cycles;
 // 	atomic_t count;
 // };
 
-static struct vmexit_info vmexit_info_array[70];
-EXPORT_SYMBOL(vmexit_info_array);
+static struct vmexit_info vmexit_info_array[MAX_VMEXITS];
+//EXPORT_SYMBOL(vmexit_info_array);
 /****************************************/
 
 static DEFINE_STATIC_KEY_FALSE(vmx_l1d_should_flush);

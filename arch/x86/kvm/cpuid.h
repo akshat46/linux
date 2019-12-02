@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ARCH_X86_KVM_CPUID_H
 #define ARCH_X86_KVM_CPUID_H
+#define MAX_VMEXITS 70
 
 #include "x86.h"
 #include <asm/cpu.h>
@@ -44,7 +45,7 @@ struct vmexit_info
 	atomic64_t total_time;
 	atomic_t count;
 };
-extern struct vmexit_info vmexit_info_array[70];
+extern struct vmexit_info vmexit_info_array[MAX_VMEXITS];
 /*******************/
 
 static const struct cpuid_reg reverse_cpuid[] = {
