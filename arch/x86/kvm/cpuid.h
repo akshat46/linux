@@ -38,6 +38,15 @@ struct cpuid_reg {
 	int reg;
 };
 
+/**CUSTOM VARIABLES**/
+struct vmexit_info
+{
+	atomic64_t total_time;
+	atomic_t count;
+};
+extern struct vmexit_info vmexit_info_array[70];
+/*******************/
+
 static const struct cpuid_reg reverse_cpuid[] = {
 	[CPUID_1_EDX]         = {         1, 0, CPUID_EDX},
 	[CPUID_8000_0001_EDX] = {0x80000001, 0, CPUID_EDX},
