@@ -201,9 +201,7 @@ extern atomic64_t id_total_cpu_cycles;
 // 	atomic_t count;
 // };
 
-struct vmexit_info vmexit_info_array[MAX_VMEXITS] = {
-	[0 ... MAX_VMEXITS] = { ATOMIC_INIT(0), ATOMIC_INIT(0) }
-};
+
 //EXPORT_SYMBOL(vmexit_info_array);
 /****************************************/
 
