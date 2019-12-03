@@ -10058,7 +10058,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 	
 	atomic_inc(&total_exits_temp);
 	atomic_inc(&vmexit_info_array[exit_reason].count);
-	printk("******* vmexit info incremented");
 	/*
 	 * Flush logged GPAs PML buffer, this will make dirty_bitmap more
 	 * updated. Another good is, in kvm_vm_ioctl_get_dirty_log, before

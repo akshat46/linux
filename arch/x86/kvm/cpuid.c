@@ -1004,7 +1004,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 		case 0x4FFFFFFD:
 			printk("ecx: %lu\n", (unsigned long)ecx);
 			temp = eax;
-			// eax = atomic_read(&vmexit_info_array[temp].count);
+			eax = atomic_read(&vmexit_info_array[temp].count);
 			printk("Total time spent in vmx: %lu\n", eax);
 			break;
 		case 0x4FFFFFFC:
