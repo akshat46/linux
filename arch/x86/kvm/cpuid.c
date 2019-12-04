@@ -1009,9 +1009,15 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			printk("#######Print statement after\n");
 			break;
 		case 0x4FFFFFFC:
-			edx = 4567;
-			printk("edx: %lu\n", (unsigned long)edx);
-			printk("eax##4: %lu\n", (unsigned long)eax);
+			printk("---------ecx: %lu\n", (unsigned long)ecx);
+			temp = ecx;
+			printk("Time spent for specific exit: %lu\n", atomic64_read(&vmexit_info_array[temp].total_time));
+			low_bits_totaltime = atomic64_read(&vmexit_info_array[temp].total_time) & 0xffffffff;
+			high_bits_totaltime = atomic64_read(&vmexit_info_array[temp].total_time) >> 32;
+			ebx = high_bits_totaltime;
+			ecx = low_bits_totaltime;
+			printk("high: %lu\n", (unsigned long)ebx);
+			printk("low: %lu\n", (unsigned long)ecx);
 			break;
 		default:
 			kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);	

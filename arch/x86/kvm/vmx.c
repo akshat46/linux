@@ -10074,6 +10074,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		end = rdtsc();
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
+		atomic64_add(tmp, &vmexit_info_array[exit_reason].total_time);
 		return handle_invalid_guest_state(vcpu);
 	}
 
@@ -10082,6 +10083,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		end = rdtsc();
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
+		atomic64_add(tmp, &vmexit_info_array[exit_reason].total_time);
 		return nested_vmx_reflect_vmexit(vcpu, exit_reason);
 	}
 
@@ -10094,6 +10096,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		end = rdtsc();
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
+		atomic64_add(tmp, &vmexit_info_array[exit_reason].total_time);
 		return 0;
 	}
 
@@ -10105,6 +10108,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		end = rdtsc();
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
+		atomic64_add(tmp, &vmexit_info_array[exit_reason].total_time);
 		return 0;
 	}
 
@@ -10135,6 +10139,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		end = rdtsc();
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
+		atomic64_add(tmp, &vmexit_info_array[exit_reason].total_time);
 		return 0;
 	}
 
@@ -10163,6 +10168,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		end = rdtsc();
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
+		atomic64_add(tmp, &vmexit_info_array[exit_reason].total_time);
 		return kvm_vmx_exit_handlers[exit_reason](vcpu);
 	}
 	else {
@@ -10173,6 +10179,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 		end = rdtsc();
 		tmp = end - start;
 		atomic64_add(tmp, &total_cpu_cycles);
+		atomic64_add(tmp, &vmexit_info_array[exit_reason].total_time);
 		return 1;
 	}
 }
