@@ -1,9 +1,26 @@
 CMPE283
 ===========
 
-Assignment I - 0x283 hypercall 
+Kernel Version: 4.19
 
-We were having trouble building latest source tree so we reverted to an older release (4.19) from last year. Both the master and kernel_4.19 branch however have same code.
+For CPUID leaf node %eax=0x4FFFFFFD:
+
+- Return the number of exits for the exit number provided (on input) in %ecx
+    - This value should be returned in %eax
+
+For CPUID leaf node %eax=0x4FFFFFFC:
+
+- Return the time spent processing the exit number provided (on input) in %ecx
+    - Return the high 32 bits of the total time spent for that exit in %ebx
+    - Return the low 32 bits of the total time spent for that exit in %ecx
+    
+Progress report and Notes: 
+
+https://paper.dropbox.com/doc/Assignment-3-notes--BJq0giq6bj7DMe9euSqFSyOFAQ-8BsRlYslIWeD7nTpWQDdh
+
+Final Report: 
+
+https://paper.dropbox.com/doc/Assignment-3--BJonkdra361XphRUkyNqEeXiAQ-N2bWHMh8TLba2hNdcQKCQ
 
 
 
